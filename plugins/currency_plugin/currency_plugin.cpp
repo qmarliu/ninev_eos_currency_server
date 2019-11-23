@@ -124,7 +124,7 @@ void currency_plugin_impl::send_deposit_request(const currency_plugin_impl::depo
     json_t *result = NULL;
 
     json_t *request = json_object();
-    json_object_set_new(request, "method", json_string("balance.incoming"));
+    json_object_set_new(request, "method", json_string("balance.recharge"));
     json_t *params = json_array();
     json_array_append_new(params, json_integer(std::stoull(d.user_id)));
     json_array_append_new(params, json_string(d.symbol.c_str()));
@@ -479,21 +479,6 @@ void currency_plugin_impl::_process_accepted_block( const chain::block_state_ptr
                     d.business_id = tv.tv_sec * 1000000 + tv.tv_usec;
                     send_deposit_request(d, 1);
                     deposit_block_record[id].push_back(d);
-                } else if (data["from"].as_string() == withdraw_user) {
-                    std::string s = data["quantity"].as_string();
-                    std::string balance = s.substr(0, s.find(' '));
-                    withdraw_data d;
-                    d.user_id = data["memo"].as_string();
-                    d.symbol = symbol[pos];
-                    d.balance = balance;
-                    d.to = data["to"].as_string();
-                    d.height = new_height;
-                    d.txid = trx["id"].as_string();
-                    struct timeval tv;
-                    gettimeofday(&tv, NULL);
-                    d.business_id = tv.tv_sec * 1000000 + tv.tv_usec;
-                    send_withdraw_request(d, 1);
-                    withdraw_block_record[id].push_back(d);
                 }
             }
         }
