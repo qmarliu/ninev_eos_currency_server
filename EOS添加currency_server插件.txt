@@ -1,0 +1,18 @@
+0. EOS代码下载并编译
+    git clone https://github.com/EOSIO/eos --recursive #下载代码
+    cd eos
+    git checkout v2.0.4 #切换到最新的稳定版本，git tag可以查看到
+    git submodule update --init --recursive #确保子模块同步
+    ./scripts/eosio_build.sh #编译
+    
+1. 将curreny_plugin目录添加到plugins中。
+
+2. 在plugins目录下的CMakeLists.txt文件下面添加一行,如：
+add_subdirectory(state_history_plugin)
++add_subdirectory(currency_plugin)
+
+3. 在programs/nodeos的CMakeLists.txt中添加一行，如：
+PRIVATE -Wl,${whole_archive_flag} net_api_plugin             -Wl,${no_whole_archive_flag}
++PRIVATE -Wl,${whole_archive_flag} currency_plugin             -Wl,${no_whole_archive_flag}
+
+4. 给充值账户(如：ninevdeposit)部署合约充值，contract/deposit/readme.md文档
